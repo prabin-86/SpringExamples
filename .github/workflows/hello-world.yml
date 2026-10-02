@@ -1,23 +1,22 @@
-name: Multi-Job Pipeline
+name: Multi-Job Sequential Pipeline
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  # Job 1: This will succeed
   first-job:
     runs-on: ubuntu-latest
     steps:
       - name: Run successful step
         run: echo "Job 1 completed successfully!"
 
-  # Job 2: This is configured to fail on purpose
   second-job:
     runs-on: ubuntu-latest
+    # 👇 ADD THIS LINE to link the two jobs together sequentially
+    needs: first-job 
     steps:
       - name: Run failing step
         run: |
           echo "Job 2 is executing..."
-          echo "Simulating an error here!"
           exit 1
