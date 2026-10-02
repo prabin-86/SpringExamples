@@ -1,22 +1,23 @@
-name: Simple Hello World Pipeline
+name: Multi-Job Pipeline
 
-# The Event: Trigger this workflow on every code push to the main branch
 on:
   push:
     branches: [ "main" ]
 
-# The Jobs block
 jobs:
-  say-hello:
-    # The Runner: The OS environment this job runs on
+  # Job 1: This will succeed
+  first-job:
     runs-on: ubuntu-latest
-
-    # The Steps block: The list of tasks to execute sequentially
     steps:
-      # Step 1: Check out your repository's code onto the runner
-      - name: Checkout repository code
-        uses: actions/checkout@v4
+      - name: Run successful step
+        run: echo "Job 1 completed successfully!"
 
-      # Step 2: Run a basic shell command
-      - name: Print a greeting
-        run: echo "Hello, world! This is build number ${{ github.run_number }}."
+  # Job 2: This is configured to fail on purpose
+  second-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run failing step
+        run: |
+          echo "Job 2 is executing..."
+          echo "Simulating an error here!"
+          exit 1
