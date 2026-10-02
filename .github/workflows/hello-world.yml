@@ -40,3 +40,9 @@ jobs:
         run: |
           echo "Reading downloaded file contents:"
           cat build.txt
+
+      # 5. 👇 FORCE THIS JOB TO FAIL ON PURPOSE
+      - name: Force failure
+        run: |
+          echo "Artifact was successfully received, but forcing an error now!"
+          exit 1
