@@ -1,0 +1,22 @@
+name: Simple Hello World Pipeline
+
+# The Event: Trigger this workflow on every code push to the main branch
+on:
+  push:
+    branches: [ "main" ]
+
+# The Jobs block
+jobs:
+  say-hello:
+    # The Runner: The OS environment this job runs on
+    runs-on: ubuntu-latest
+
+    # The Steps block: The list of tasks to execute sequentially
+    steps:
+      # Step 1: Check out your repository's code onto the runner
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # Step 2: Run a basic shell command
+      - name: Print a greeting
+        run: echo "Hello, world! This is build number ${{ github.run_number }}."
