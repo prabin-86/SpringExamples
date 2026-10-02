@@ -1,4 +1,4 @@
-name: Multi-Job Sequential Pipeline
+name: Multi-Job Artifact Pipeline
 
 on:
   push:
@@ -8,15 +8,35 @@ jobs:
   first-job:
     runs-on: ubuntu-latest
     steps:
-      - name: Run successful step
-        run: echo "Job 1 completed successfully!"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 1. Generate a dummy file
+      - name: Create a build file
+        run: echo "Compiled assets from build number ${{ github.run_number }}" > build.txt
+
+      # 2. Upload the file to GitHub storage
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-compiled-assets   # The custom name for your zip bundle
+          path: build.txt            # The path to the file or folder you want to save
 
   second-job:
     runs-on: ubuntu-latest
-    # 👇 ADD THIS LINE to link the two jobs together sequentially
-    needs: first-job 
+    needs: first-job                 # Keeps them sequential
     steps:
-      - name: Run failing step
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 3. Download the file from GitHub storage onto this new machine
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: my-compiled-assets   # Must exactly match the name used above
+
+      # 4. Read the file to prove it arrived
+      - name: Read the asset file
         run: |
-          echo "Job 2 is executing..."
-          exit 1
+          echo "Reading downloaded file contents:"
+          cat build.txt
