@@ -3,6 +3,8 @@ name: Multi-Job Artifact Pipeline
 on:
   push:
     branches: [ "main" ]
+  # 👇 ADD THIS LINE to enable the manual "Run workflow" button in the UI
+  workflow_dispatch: 
 
 jobs:
   first-job:
@@ -10,39 +12,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # 1. Generate a dummy file
       - name: Create a build file
         run: echo "Compiled assets from build number ${{ github.run_number }}" > build.txt
-
-      # 2. Upload the file to GitHub storage
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: my-compiled-assets   # The custom name for your zip bundle
-          path: build.txt            # The path to the file or folder you want to save
+          name: my-compiled-assets
+          path: build.txt
 
   second-job:
     runs-on: ubuntu-latest
-    needs: first-job                 # Keeps them sequential
+    needs: first-job
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # 3. Download the file from GitHub storage onto this new machine
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: my-compiled-assets   # Must exactly match the name used above
-
-      # 4. Read the file to prove it arrived
+          name: my-compiled-assets
       - name: Read the asset file
-        run: |
-          echo "Reading downloaded file contents:"
-          cat build.txt
-
-      # 5. 👇 FORCE THIS JOB TO FAIL ON PURPOSE
+        run: cat build.txt
       - name: Force failure
-        run: |
-          echo "Artifact was successfully received, but forcing an error now!"
-          exit 1
+        run: exit 1
